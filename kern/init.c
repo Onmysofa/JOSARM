@@ -20,7 +20,7 @@ test_backtrace(int x)
 }
 
 void
-i386_init(void)
+pi_init(void)
 {
 	extern char edata[], end[];
 
@@ -64,7 +64,7 @@ _panic(const char *file, int line, const char *fmt,...)
 	panicstr = fmt;
 
 	// Be extra sure that the machine is in as reasonable state
-	__asm __volatile("cli; cld");
+	//__asm __volatile("cli; cld");
 
 	va_start(ap, fmt);
 	cprintf("kernel panic at %s:%d: ", file, line);

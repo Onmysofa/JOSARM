@@ -17,21 +17,15 @@
 
 #define	RELOC(x) ((x) - KERNBASE)
 
-#define MULTIBOOT_HEADER_MAGIC (0x1BADB002)
-#define MULTIBOOT_HEADER_FLAGS (0)
-#define CHECKSUM (-(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS))
-
 ###################################################################
 # entry point
 ###################################################################
 
-.text
 
-# The Multiboot header
-.align 4
-.long MULTIBOOT_HEADER_MAGIC
-.long MULTIBOOT_HEADER_FLAGS
-.long CHECKSUM
+
+.text
+# Ruogu: Code should start at 0x8000. I have no choice.
+
 
 # '_start' specifies the ELF entry point.  Since we haven't set up
 # virtual memory when the bootloader enters this code, we need the
@@ -41,53 +35,44 @@ _start = RELOC(entry)
 
 .globl entry
 entry:
-	movw	$0x1234,0x472			# warm boot
 
-	# We haven't set up virtual memory yet, so we're running from
-	# the physical address the boot loader loaded the kernel at: 1MB
-	# (plus a few bytes).  However, the C code is linked to run at
-	# KERNBASE+1MB.  Hence, we set up a trivial page directory that
-	# translates virtual addresses [KERNBASE, KERNBASE+4MB) to
-	# physical addresses [0, 4MB).  This 4MB region will be
-	# sufficient until we set up our real page table in mem_init
-	# in lab 2.
+# Ruogu: Load pgtable to the first one
+ldr r0, =RELOC(entry_pgdir)
+mcr p15, 0, r0, c2, c0, 0
+# Ruogu: use the first table
+mov r0, #0
+mcr p15, 0, r0, c2, c0, 2
+/* Set Domain 0 ACL to "Client", enforcing memory permissions
+ * See ARM1176JZF-S manual, 3-64
+ * Every mapped section/page is in domain 0
+ */
+mov r0, #1
+mcr p15, #0, r0, c3, c0, #0
+/* Read control register to r0*/
+mrc p15, #0, r0, c1, c0, #0
+/* Turn on MMU */
+mov r1, #1
+orr r0, r0, r1
+/* Enable ARMv6 MMU features (disable sub-page AP) */
+mov r1, #(1<<23)
+orr r0, r0, r1
+/* Write value back to control register */
+mcr p15, #0, r0, c1, c0, #0
 
-	# Load the physical address of entry_pgdir into cr3.  entry_pgdir
-	# is defined in entrypgdir.c.
-	movl	$(RELOC(entry_pgdir)), %eax
-	movl	%eax, %cr3
-	# Turn on paging.
-	movl	%cr0, %eax
-	orl	$(CR0_PE|CR0_PG|CR0_WP), %eax
-	movl	%eax, %cr0
 
-	# Now paging is enabled, but we're still running at a low EIP
-	# (why is this okay?).  Jump up above KERNBASE before entering
-	# C code.
-	mov	$relocated, %eax
-	jmp	*%eax
-relocated:
+# Ruogu: Set up boot stack
+ldr r0, =bootstack
+mov sp, r0
 
-	# Clear the frame pointer register (EBP)
-	# so that once we get into debugging C code,
-	# stack backtraces will be terminated properly.
-	movl	$0x0,%ebp			# nuke frame pointer
-
-	# Set the stack pointer
-	movl	$(bootstacktop),%esp
-
-	# now to C code
-	call	i386_init
-
-	# Should never get here, but in case we do, just spin.
-spin:	jmp	spin
-
+ldr lr, =pi_init
+bx lr
 
 .data
 ###################################################################
 # boot stack
 ###################################################################
-	.p2align	PGSHIFT		# force page alignment
+# force page alignment
+	.p2align	PGSHIFT		
 	.globl		bootstack
 bootstack:
 	.space		KSTKSIZE
