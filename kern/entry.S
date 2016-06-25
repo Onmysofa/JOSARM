@@ -23,9 +23,9 @@
 
 
 
-.text
-# Ruogu: Code should start at 0x8000. I have no choice.
+.section ".text"
 
+# Ruogu: Code should start at 0x8000. I have no choice.
 
 # '_start' specifies the ELF entry point.  Since we haven't set up
 # virtual memory when the bootloader enters this code, we need the
@@ -35,6 +35,42 @@ _start = RELOC(entry)
 
 .globl entry
 entry:
+cps #0x13		/* Change to supervisor (SVC) mode */
+# Ruogu: Set up boot stack
+ldr r0, =bootstacktop
+mov sp, r0
+
+// Ruogu: DEBUG TOOL. To make ACT LET light.
+/*
+ldr r0, =GPIO_BASE
+mov r3,#5
+mov r1,#1
+lsl r1,#21
+str r1,[r0,#16]
+mov r1,#1
+lsl r1,#15
+loop: 
+str r1,[r0,#44]
+mov r2,#0x200000
+wait1:
+	sub r2,#1
+	ldr r4, =RELOC(wait1)
+	cmp r2,#0
+	bxne r4
+str r1,[r0,#32]
+mov r2,#0x200000
+wait2:
+	sub r2,#1
+	ldr r4, =RELOC(wait2)
+	cmp r2,#0
+	bxne r4
+ldr r4, =RELOC(loop)
+sub r3, #1
+cmp r3, #0
+bxne r4 */
+//DEBUG TOOL
+
+
 
 # Ruogu: Load pgtable to the first one
 ldr r0, =RELOC(entry_pgdir)
@@ -46,23 +82,52 @@ mcr p15, 0, r0, c2, c0, 2
  * See ARM1176JZF-S manual, 3-64
  * Every mapped section/page is in domain 0
  */
-mov r0, #1
-mcr p15, #0, r0, c3, c0, #0
-/* Read control register to r0*/
-mrc p15, #0, r0, c1, c0, #0
+mov r0, #3
+mcr p15, 0, r0, c3, c0, 0
+//ldr r0, =0xFFFFFFFF // 0x11 for every domain represents the MANAGER
+//mcr p15, 0, r0, c3, c0, 0 //Set domain access permission
+/* Read control register to r0 */
+mrc p15, 0, r0, c1, c0, 0
 /* Turn on MMU */
-mov r1, #1
-orr r0, r0, r1
-/* Enable ARMv6 MMU features (disable sub-page AP) */
-mov r1, #(1<<23)
-orr r0, r0, r1
+orr r0, r0, #1
 /* Write value back to control register */
-mcr p15, #0, r0, c1, c0, #0
+mcr p15, 0, r0, c1, c0, 0
+// Invalidate all the TLB entries
+//mov r0, #0
+//mcr p15, 0, r0, c8, c7, 0
 
 
-# Ruogu: Set up boot stack
-ldr r0, =bootstack
-mov sp, r0
+
+// Ruogu: DEBUG TOOL. To make ACT LET light.
+/*
+ldr r0, =GPIO_BASE
+mov r3,#5
+mov r1,#1
+lsl r1,#21
+str r1,[r0,#16]
+mov r1,#1
+lsl r1,#15
+loop: 
+str r1,[r0,#44]
+mov r2,#0x3F0000
+wait1:
+	sub r2,#1
+	ldr r4, =RELOC(wait1)
+	cmp r2,#0
+	bxne r4
+str r1,[r0,#32]
+mov r2,#0x3F0000
+wait2:
+	sub r2,#1
+	ldr r4, =RELOC(wait2)
+	cmp r2,#0
+	bxne r4
+ldr r4, =RELOC(loop)
+sub r3, #1
+cmp r3, #0
+bxne r4 */
+//DEBUG TOOL
+
 
 ldr lr, =pi_init
 bx lr

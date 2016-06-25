@@ -6,9 +6,10 @@ ENTRY(_start)
 SECTIONS
 {
 	/* Link the kernel at this address: "." means the current address */
+	/* Ruogu: Start virtual address should be modified like this. */
 	. = 0xF0008000;
 
-	/* Ruogu: The kernel is booted at 0x8000 for Raspberry Pi (I DON'T KNOW WHY!) */
+	/* Ruogu: The kernel is booted at 0x8000 for Raspberry Pi 2 */
 
 	/* AT(...) gives the load address of this section, which tells
 	   the boot loader where to load the kernel in physical memory */

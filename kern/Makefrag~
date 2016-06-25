@@ -23,14 +23,14 @@ KERN_SRCFILES :=	kern/entry.S \
 			kern/kclock.c \
 			kern/picirq.c \
 			kern/printf.c \
-		#	kern/trap.c \
-		#	kern/trapentry.S \
-		#	kern/sched.c \
-		#	kern/syscall.c \
-		#	kern/kdebug.c \
-		#	lib/printfmt.c \
-		#	lib/readline.c \
-		#	lib/string.c
+			kern/trap.c \
+			kern/trapentry.S \
+			kern/sched.c \
+			kern/syscall.c \
+			kern/kdebug.c \
+			lib/printfmt.c \
+			lib/readline.c \
+			lib/string.c
 
 KERN_SRCFILES := $(wildcard $(KERN_SRCFILES))
 
@@ -60,12 +60,15 @@ $(OBJDIR)/kern/kernel: $(KERN_OBJFILES) kern/kernel.ld
 	$(V)$(OBJDUMP) -S $@ > $@.asm
 	$(V)$(NM) -n $@ > $@.sym
 
+$(OBJDIR)/kern/kernel7.img: $(OBJDIR)/kern/kernel 
+	$(V)$(OBJCOPY) $(OBJDIR)/kern/kernel -O binary
+
 $(OBJDIR)/kern/kernel.img: $(OBJDIR)/kern/kernel 
 	@echo + mk $@
 	$(V)dd if=/dev/zero of=$(OBJDIR)/kern/kernel.img~ count=10000 2>/dev/null
 	$(V)dd if=$(OBJDIR)/kern/kernel of=$(OBJDIR)/kern/kernel.img~ seek=1 conv=notrunc 2>/dev/null
 	$(V)mv $(OBJDIR)/kern/kernel.img~ $(OBJDIR)/kern/kernel.img
 
-all: $(OBJDIR)/kern/kernel.img
+all: $(OBJDIR)/kern/kernel.img $(OBJDIR)/kern/kernel7.img
 
 

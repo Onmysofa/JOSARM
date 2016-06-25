@@ -48,14 +48,14 @@
 #define PGSIZE		0x100000	// bytes mapped by a page
 #define PGSHIFT		20		// log2(PGSIZE)
 
-//#define PTSIZE		(PGSIZE*NPTENTRIES) // bytes mapped by a page directory entry
+#define PTSIZE		0x400000 // bytes mapped by a page directory entry
 #define PTSHIFT		32		// log2(PTSIZE)
 
 #define PTXSHIFT	20		// offset of PTX in a linear address
 #define PDXSHIFT	32		// offset of PDX in a linear address
 
 // Ruogu: PTE(Section Entry)
-// +--------32-20---------+---19-12-----+-11-10-+9+----8-5---+4+3+2+1+0+
+// +--------31-20---------+---19-12-----+-11-10-+9+----8-5---+4+3+2+1+0+
 // |      Section base    |    Zeros    |  AP   | | Domain   | |C|B| | |
 // |        address       |             |       |0|          |1| | |1|0|
 // +----------------------+-------------+-------+-+----------+-+-+-+-+-+
@@ -64,7 +64,7 @@
 #define PTE_P		0x012	// Present
 #define PTE_C		0x008	// Cacheable
 #define PTE_B		0x004	// Bufferable
-#define PTE_SWO		0x400	// Superviser writes only
+#define PTE_SWO		0xC00	// Superviser writes only
 #define PTE_SWUR	0x800	// Superviser writes & user reads
 #define PTE_SWUW	0xC00	// Superviser writes & user writes
 

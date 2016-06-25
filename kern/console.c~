@@ -40,9 +40,6 @@ mmio_read(uint32_t reg)
 
 enum
 {
-    // The GPIO registers base address.
-    GPIO_BASE = 0x20200000,
- 
     // The offsets for reach register.
  
     // Controls actuation of pull up/down to ALL GPIO pins.
@@ -50,9 +47,6 @@ enum
  
     // Controls actuation of pull up/down for specific GPIO pin.
     GPPUDCLK0 = (GPIO_BASE + 0x98),
- 
-    // The base address for UART.
-    UART0_BASE = 0x20201000,
  
     // The offsets for reach register for the UART.
     UART0_DR     = (UART0_BASE + 0x00),
@@ -167,7 +161,7 @@ lpt_putc(int c)
 
 
 
-uint32_t  CGA_COLOR_MASK = 0;
+uint32_t CGA_COLOR_MASK = 0;
 
 
 

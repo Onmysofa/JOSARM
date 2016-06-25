@@ -3,9 +3,32 @@
 #include <inc/stdio.h>
 #include <inc/string.h>
 #include <inc/assert.h>
+#include <inc/memlayout.h>
 
 #include <kern/monitor.h>
 #include <kern/console.h>
+
+void
+ack_blink()
+{
+	uint32_t *gpio = (unsigned int*)GPIO_BASE;
+	gpio[4] |= (1 << 21);
+	int tim;
+	while(true)
+	{
+		gpio[11] = (1 << 15);
+		/* Set the LED GPIO pin low ( Turn OK LED on for original Pi, and off
+		   for plus models )*/
+		for(tim = 0; tim < 500000; tim++)
+		__asm __volatile("nop")    ;
+
+		gpio[8] = (1 << 15);
+		/* Set the LED GPIO pin high ( Turn OK LED off for original Pi, and on
+		   for plus models )*/
+		for(tim = 0; tim < 500000; tim++)
+		__asm __volatile("nop")    ;
+	}
+}
 
 // Test the stack backtrace function (lab 1 only)
 void
@@ -32,7 +55,7 @@ pi_init(void)
 	// Initialize the console.
 	// Can't call cprintf until after we do this!
 	cons_init();
-
+	cprintf("end : %x\r\n", (uint32_t)end);
 	cprintf("6828 decimal is %o octal!\n", 6828);
 
 	// Test the stack backtrace function (lab 1 only)

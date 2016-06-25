@@ -103,6 +103,15 @@
 
 #define ULIM		(MMIOBASE)
 
+// Ruogu: GPIO and UART 
+//#define GPIO_BASE  0x20200000
+//#define UART0_BASE 0x20201000
+#define GPIO_BASE  0x3F200000
+#define UART0_BASE 0x3F201000
+// I can't believe the address of GPIO changed again at Rpi2!
+// Also, in the manual the address is different with all of above.
+// I have nothing to say.
+
 /*
  * User read-only mappings! Anything below here til UTOP are readonly to user.
  * They are global pages mapped in at env allocation time.
