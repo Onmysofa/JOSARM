@@ -99,7 +99,7 @@ mcr p15, 0, r0, c1, c0, 0
 
 
 // Ruogu: DEBUG TOOL. To make ACT LET light.
-/*
+
 ldr r0, =GPIO_BASE
 mov r3,#5
 mov r1,#1
@@ -109,23 +109,23 @@ mov r1,#1
 lsl r1,#15
 loop: 
 str r1,[r0,#44]
-mov r2,#0x3F0000
+mov r2,#0x200000
 wait1:
 	sub r2,#1
-	ldr r4, =RELOC(wait1)
+	ldr r4, =wait1
 	cmp r2,#0
 	bxne r4
 str r1,[r0,#32]
-mov r2,#0x3F0000
+mov r2,#0x200000
 wait2:
 	sub r2,#1
-	ldr r4, =RELOC(wait2)
+	ldr r4, =wait2
 	cmp r2,#0
 	bxne r4
 ldr r4, =RELOC(loop)
 sub r3, #1
 cmp r3, #0
-bxne r4 */
+bxne r4 
 //DEBUG TOOL
 
 

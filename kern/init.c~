@@ -55,7 +55,8 @@ pi_init(void)
 	// Initialize the console.
 	// Can't call cprintf until after we do this!
 	cons_init();
-cprintf("end : %x\r\n", (uint32_t)end);
+	cprintf("end : %x\r\n", (uint32_t)end);
+	cprintf("%x\n", entry_pgdir[1]);
 	cprintf("6828 decimal is %o octal!\n", 6828);
 
 	// Test the stack backtrace function (lab 1 only)

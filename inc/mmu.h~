@@ -12,7 +12,42 @@
  *	Part 1.  Paging data structures and constants.
  *
  */
+	/* The MMU has two translation tables. Table 0 covers the bottom
+	 * of the address space, from 0x00000000, and deals with between
+	 * 32MB to 4GB of the virtual address space.
+	 * Translation table 1 covers the rest of the memory. For now,
+	 * both tables are set to the same thing, and, by default, table
+	 * 0 manages the entire virtual address space. Later on, the
+	 * table 0 register will be pointed to process-specific tables for
+	 * each process's virtual memory
+	 */
 
+	/* Set up translation table
+	 * ARM1176JZF-S manual, 6-39
+	 *
+	 * The memory is divided in to 4096 1MB sections. Most of these are
+	 * unmapped (resulting in prefetch/data aborts), except
+	 * 0x8000000-0xa1000000, which are mapped to 0x00000000-0x2a000000
+	 * (physical memory and peripherals), and the kernel code and data
+	 *
+	 * Memory privilege is set by APX/AP bits (3 bits in total)
+	 * APX is at bit 15 of the sector definition, while AP are at bits
+	 * 10 and 11.
+	 *
+	 * APX AP            Privileged    Unprivileged
+	 *  1  11 (0x8c00) = read-only     read-only
+	 *  1  01 (0x8400) = read-only     no access
+	 *  0  10 (0x0800) = read-write    read-only
+	 *  0  01 (0x0400) = read-write    no-access
+	 *
+	 * eXecute Never (XN) is at bit 4 (0x10) - sections with this flag
+	 * cannot be executes, even by privileged processor modes
+	 *
+	 * Bits 0 and 1 identify the table entry type
+	 * 0 or 3 = translation fault (3 is reserved and shouldn't be used)
+	 * 1 = course page table
+	 * 2 = section or supersection
+	 */
 // A linear address 'la' has a three-part structure as follows:
 // Ruogu: Modified version of page table, which only has one level!
 // +--------12------------+------------20-------------+
@@ -55,18 +90,21 @@
 #define PDXSHIFT	32		// offset of PDX in a linear address
 
 // Ruogu: PTE(Section Entry)
-// +--------31-20---------+---19-12-----+-11-10-+9+----8-5---+4+3+2+1+0+
-// |      Section base    |    Zeros    |  AP   | | Domain   | |C|B| | |
-// |        address       |             |       |0|          |1| | |1|0|
-// +----------------------+-------------+-------+-+----------+-+-+-+-+-+
+// +--------31-20---------+-19-16---15-+--14-12---+-11-10-+9+----8-5---+4+3+2+1+0+
+// |      Section base    |  Zeros |APX|  ZEROS   |  AP   | | Domain   |X|C|B| | |
+// |        address       |        |   |          |       |0|          |N| | |1|0|
+// +----------------------+--------+---+----------+-------+-+----------+-+-+-+-+-+
 // Page table/directory entry flags.
-#define PTE_AP		0xC00	// AP bits
-#define PTE_P		0x002	// Present
-#define PTE_C		0x008	// Cacheable
-#define PTE_B		0x004	// Bufferable
-#define PTE_SWO		0x400	// Superviser writes only
-#define PTE_SWUR	0x800	// Superviser writes & user reads
-#define PTE_SWUW	0xC00	// Superviser writes & user writes
+#define PTE_AP_X	0x8C00	// AP and APX bits
+#define PTE_P		0x0002	// Present
+#define PTE_NX		0x0010	// Execute never
+#define PTE_C		0x0008	// Cacheable
+#define PTE_B		0x0004	// Bufferable
+#define PTE_SRUR	0x8C00  // Superviser reads only & user reads only
+#define PTE_SRO		0x8400  // Superviser reads only
+#define PTE_SWO		0x0400	// Superviser writes only
+#define PTE_SWUR	0x0800	// Superviser writes & user reads
+#define PTE_SWUW	0x8C00	// Superviser writes & user writes
 
 
 // Address in page table or page directory entry
