@@ -71,8 +71,6 @@ bxne r4 */
 //DEBUG TOOL
 
 
-.globl bootpgdir
-bootpgdir = entry_pgdir
 
 # Ruogu: Load pgtable to the first one
 ldr r0, =RELOC(entry_pgdir)
@@ -101,7 +99,7 @@ mcr p15, 0, r0, c1, c0, 0
 
 
 // Ruogu: DEBUG TOOL. To make ACT LET light.
-
+/*
 ldr r0, =GPIO_BASE
 mov r3,#5
 mov r1,#1
@@ -127,7 +125,7 @@ wait2:
 ldr r4, =RELOC(loop)
 sub r3, #1
 cmp r3, #0
-bxne r4 
+bxne r4 */
 //DEBUG TOOL
 
 

@@ -169,13 +169,13 @@ memmove(void *dst, const void *src, size_t n)
 }
 
 #else
-
+extern void cprintf(char *, int, int);
 void *
 memset(void *v, int c, size_t n)
 {
 	char *p;
 	int m;
-
+cprintf("memset: %x %u\n", (int)v, n);
 	p = v;
 	m = n;
 	while (--m >= 0)

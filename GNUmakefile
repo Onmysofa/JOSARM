@@ -65,7 +65,7 @@ include kern/Makefrag
 QEMU := ~/Desktop/arm-lab/qemu-pi/qemu/build/arm-softmmu/qemu-system-arm
 QEMUOPTS = -kernel ./obj/kern/kernel -M raspi2 -serial mon:stdio -gdb tcp::$(GDBPORT)
 QEMUOPTS += $(shell if $(QEMU) -nographic -help | grep -q '^-D '; then echo '-D qemu.log'; fi)
-IMAGES = $(OBJDIR)/kern/kernel.img
+//IMAGES = $(OBJDIR)/kern/kernel.img
 QEMUOPTS += $(QEMUEXTRA)
 
 .gdbinit: .gdbinit.tmpl

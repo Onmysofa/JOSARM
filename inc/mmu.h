@@ -64,9 +64,6 @@
 // page number field of address
 #define PGNUM(la)	(((uintptr_t) (la)) >> PTXSHIFT)
 
-// page directory index
-#define PDX(la)		0
-
 // page table index
 #define PTX(la)		((((uintptr_t) (la)) >> PTXSHIFT) & 0xFFF)
 
@@ -77,7 +74,7 @@
 #define PGADDR(d, t, o)	((void*) (0 | (t) << PTXSHIFT | (o)))
 
 // Page directory and page table constants.
-#define NPDENTRIES	1		// page directory entries per page directory
+
 #define NPTENTRIES	4096		// page table entries per page table
 
 #define PGSIZE		0x100000	// bytes mapped by a page
@@ -87,7 +84,6 @@
 #define PTSHIFT		32		// log2(PTSIZE)
 
 #define PTXSHIFT	20		// offset of PTX in a linear address
-#define PDXSHIFT	32		// offset of PDX in a linear address
 
 // Ruogu: PTE(Section Entry)
 // +--------31-20---------+-19-16--+15-+--14-12---+-11-10-+9+----8-5---+4+3+2+1+0+
@@ -96,6 +92,7 @@
 // +----------------------+--------+---+----------+-------+-+----------+-+-+-+-+-+
 // Page table/directory entry flags.
 #define PTE_AP_X	0x8C00	// AP and APX bits
+#define PTE_P_MASK	0x0003
 #define PTE_P		0x0002	// Present
 #define PTE_NX		0x0010	// Execute never
 #define PTE_C		0x0008	// Cacheable
