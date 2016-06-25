@@ -57,11 +57,11 @@
 // Ruogu: PTE(Section Entry)
 // +--------31-20---------+---19-12-----+-11-10-+9+----8-5---+4+3+2+1+0+
 // |      Section base    |    Zeros    |  AP   | | Domain   | |C|B| | |
-// |        address       |             |       |0|          |1| | |1|0|
+// |        address       |             |       |0|          |0| | |1|0|
 // +----------------------+-------------+-------+-+----------+-+-+-+-+-+
 // Page table/directory entry flags.
 #define PTE_AP		0xC00	// AP bits
-#define PTE_P		0x012	// Present
+#define PTE_P		0x002	// Present
 #define PTE_C		0x008	// Cacheable
 #define PTE_B		0x004	// Bufferable
 #define PTE_SWO		0x400	// Superviser writes only

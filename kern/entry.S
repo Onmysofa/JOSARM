@@ -82,7 +82,7 @@ mcr p15, 0, r0, c2, c0, 2
  * See ARM1176JZF-S manual, 3-64
  * Every mapped section/page is in domain 0
  */
-mov r0, #3
+mov r0, #1
 mcr p15, 0, r0, c3, c0, 0
 //ldr r0, =0xFFFFFFFF // 0x11 for every domain represents the MANAGER
 //mcr p15, 0, r0, c3, c0, 0 //Set domain access permission

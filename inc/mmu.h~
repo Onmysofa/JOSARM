@@ -61,10 +61,10 @@
 // +----------------------+-------------+-------+-+----------+-+-+-+-+-+
 // Page table/directory entry flags.
 #define PTE_AP		0xC00	// AP bits
-#define PTE_P		0x012	// Present
+#define PTE_P		0x002	// Present
 #define PTE_C		0x008	// Cacheable
 #define PTE_B		0x004	// Bufferable
-#define PTE_SWO		0xC00	// Superviser writes only
+#define PTE_SWO		0x400	// Superviser writes only
 #define PTE_SWUR	0x800	// Superviser writes & user reads
 #define PTE_SWUW	0xC00	// Superviser writes & user writes
 
