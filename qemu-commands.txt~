@@ -1,0 +1,2 @@
+qemu-system-arm -kernel kernel -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -gdb tcp::1222 -S
+
